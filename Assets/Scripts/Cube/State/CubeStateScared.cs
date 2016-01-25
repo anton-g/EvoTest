@@ -1,20 +1,26 @@
 using UnityEngine;
 using System.Collections;
 
-public class CubeStateScared : CubeState {
+public class CubeStateScared {
 	public event TransitionToState NewState;
 
 	CubeController _ctrl;
 	CubeController _target;
-
+	/*
 	public CubeStateScared(CubeController ctrl, CubeController target) {
 		_ctrl = ctrl;
-		_target = target;
+		if (_target) {
+			_target = target;
+		}
 
 		_ctrl.mat.color = Color.blue;
 	}
 
 	public void Move() {
+		if (_target == null) {
+			OnNewState(new CubeStateMoving(_ctrl));
+		}
+
 		Vector3 directionToTarget = _target.transform.position - _ctrl.transform.position;
 		directionToTarget = directionToTarget.normalized;
 
@@ -36,4 +42,9 @@ public class CubeStateScared : CubeState {
 	public bool CanArgue() {
 		return false;
 	}
+
+	public void Reset() {
+		_ctrl = null;
+		_target = null;
+	}*/
 }

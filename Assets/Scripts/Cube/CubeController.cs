@@ -4,8 +4,9 @@ using System.Collections;
 public class CubeController : MonoBehaviour {
 	[HideInInspector]
 	public DNA dna;
-	[HideInInspector]
+
 	public CubeState state;
+
 	[HideInInspector]
 	public LineRenderer lineRend;
 	
@@ -34,7 +35,7 @@ public class CubeController : MonoBehaviour {
 	}
 	
 	void Start () {
-		this.TransitionToState(new CubeStateMoving(this));
+		this.TransitionToState(gameObject.AddComponent<CubeStateMoving>());
 	}
 	
 	void Update () {
@@ -53,7 +54,7 @@ public class CubeController : MonoBehaviour {
 		float height = (dna.GetGene(Gene.Height) / 100.0f) % 0.25f;
 		transform.localScale += new Vector3(width, height, 0.0f);
 		
-		origColor = colors[dna.GetGene(Gene.Color)];
+		origColor = colors[dna.GetGene(Gene.Color) % 5];
 		mat.color = origColor;
 	}
 
@@ -68,7 +69,8 @@ public class CubeController : MonoBehaviour {
 	}
 
 	public void TransitionToState(CubeState newState) {
+		DestroyImmediate(this.state);
 		newState.NewState += TransitionToState;
-		state = newState;
+		this.state = newState;
 	}
 }

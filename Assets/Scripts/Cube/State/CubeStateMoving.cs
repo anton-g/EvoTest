@@ -9,15 +9,19 @@ public class CubeStateMoving : CubeState {
 	private CubeController _ctrl;
 	private float _speed;
 
-	public CubeStateMoving(CubeController ctrl) {
-		_ctrl = ctrl;
+	void Awake() {
+		_ctrl = GetComponent<CubeController>();
+	}
 
+	void Start() {
 		_ctrl.mat.color = _ctrl.origColor;
-
 		targetPosition = _ctrl.transform.position;
 	}
 
-	public void Move() {
+	public CubeStateMoving(CubeController ctrl) {
+	}
+
+	public override void Move() {
 		float distanceToTarget = Vector3.Distance(_ctrl.transform.position, targetPosition);
 		if (distanceToTarget < 0.1f) {
 			float randomX = Random.Range(_ctrl.cameraRect.x, _ctrl.cameraRect.xMax);
@@ -25,18 +29,21 @@ public class CubeStateMoving : CubeState {
 			targetPosition = new Vector3(randomX, randomY, 0.0f);
 		}
 
-		Vector3 directionToTarget = targetPosition - _ctrl.transform.position;
+		Vector3 directionToTarget = targetPosition - transform.position;
 		directionToTarget = directionToTarget.normalized;
 		
-		_ctrl.transform.Translate(directionToTarget * _ctrl.speed * Time.deltaTime);
+		transform.Translate(directionToTarget * _ctrl.speed * Time.deltaTime);
 	}
 	
-	public void HandleCollision(Collider2D collider) {
+	public override void HandleCollision(Collider2D collider) {
 		if (collider.gameObject.GetComponent<CubeController>()) {
 			CubeController enemy = collider.gameObject.GetComponent<CubeController>();
 
+			Debug.Log("collision");
+
 			if (enemy.state.CanArgue() && Random.Range(0.0f, 1.0f) < 0.4f) {
-				OnNewState(new CubeStateArgue(_ctrl, enemy, false));
+
+//				enemy.TransitionToState(new CubeStateArgue(enemy, _ctrl, true));
 			}
 		}
 	}
@@ -47,7 +54,7 @@ public class CubeStateMoving : CubeState {
 		}
 	}
 
-	public bool CanArgue() {
+	public override bool CanArgue() {
 		return true;
 	}
 }

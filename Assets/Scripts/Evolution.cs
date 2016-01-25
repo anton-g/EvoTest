@@ -2,12 +2,14 @@
 using System.Collections.Generic;
 using System.Linq;
 
-public class Evolution {
+public class Evolution : MonoBehaviour {
 
 	public DNA[] population;
 	List<DNA> matingPool;
 	
-	float mutationRate = 0.02f;
+	float mutationRate = 0.04f;
+
+	int generations = 1;
 
 	public Evolution(int size) {
 		population = new DNA[size];
@@ -22,27 +24,23 @@ public class Evolution {
 		}
 	}
 
-	public void AddToMatingPool(DNA dna) {
-		matingPool.Add(dna);
-	}
-
-	public void Reproduce() {
-		//TODO improve
-		List<DNA> sortedMatingPool = matingPool.OrderByDescending(d => d.fitness).ToList();
-
-		for (int i = 0; i < population.Length; i++) {
-			int a = Random.Range (0, sortedMatingPool.Count / 2);
-			int b = Random.Range (0, sortedMatingPool.Count / 2);
-			DNA partnerA = sortedMatingPool[a];
-			DNA partnerB = sortedMatingPool[b];
+	public void Reproduce(List<DNA> matingPool) {
+		for (int i = 0; i < population.Length / 2; i++) {
+			int a = Random.Range (0, matingPool.Count);
+			int b = Random.Range (0, matingPool.Count);
+			DNA partnerA = matingPool[a];
+			DNA partnerB = matingPool[b];
 
 			DNA child = partnerA.Crossover(partnerB);
 
 			child.Mutate(mutationRate);
 
-			population[i] = child;
+			Debug.Log(i + ": " + child);
 
-			Debug.Log(child);
+			population[i] = child;
 		}
+
+		generations++;
+		Debug.Log("Generation: " + generations);
 	}
 }

@@ -1,7 +1,7 @@
 using UnityEngine;
 using System.Collections;
 
-public class CubeStateChase : CubeState {
+public class CubeStateChase {
 	public event TransitionToState NewState;
 
 	CubeController _ctrl;
@@ -13,12 +13,18 @@ public class CubeStateChase : CubeState {
 
 	public CubeStateChase(CubeController ctrl, CubeController target) {
 		_ctrl = ctrl;
-		_target = target;
+		if (target) {
+			_target = target;
+		}
 
 		_ctrl.mat.color = Color.red;
 	}
 
 	public void Move () {
+		if (_target == null) {
+			OnNewState(new CubeStateMoving(_ctrl));
+		}
+
 		_ctrl.lineRend.SetVertexCount(2);
 		_ctrl.lineRend.SetPosition(0, _ctrl.transform.position);
 		_ctrl.lineRend.SetPosition(1, _target.transform.position);
@@ -37,9 +43,9 @@ public class CubeStateChase : CubeState {
 	}
 
 	public void HandleCollision (Collider2D collider) {
-		//TODO fix
-		if (collider.gameObject.GetComponent<CubeController>() == _target) {
+		if (collider.gameObject == _target.gameObject) {
 			_target.Die();
+			_ctrl.dna.IncreaseFitness(FitnessBonus.Kill);
 			OnNewState(new CubeStateMoving(_ctrl));
 		}
 	}
@@ -53,5 +59,10 @@ public class CubeStateChase : CubeState {
 
 	public bool CanArgue() {
 		return false;
+	}
+
+	public void Reset() {
+		_ctrl = null;
+		_target = null;
 	}
 }

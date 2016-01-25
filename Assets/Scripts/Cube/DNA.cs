@@ -15,6 +15,7 @@ public enum Gene {
 
 public enum FitnessBonus {
 	Kill = 25,
+	Love = 1,
 }
 
 public class DNA {
@@ -47,6 +48,8 @@ public class DNA {
 		newFitness -= Mathf.Max(GetGene(Gene.Height), GetGene(Gene.Width)) - Mathf.Min(GetGene(Gene.Height), GetGene(Gene.Width));
 		//Fertilitet ökar fitness
 		newFitness += GetGene(Gene.Fertility);
+		//Färg ökarfitness
+		newFitness += GetGene(Gene.Color);
 
 		for (int i = 0; i < bonuses.Count; i++) {
 			newFitness += bonuses[i];
