@@ -18,7 +18,7 @@ public class MoveState : SquareState {
 
 	public void HandleCollision(Collider2D collider) {
 		SquareController square = collider.gameObject.GetComponent<SquareController>();
-		if (square && square.currentState.CanInteract()) {
+		if (square && square.currentState.CanInteract() && Random.value < 0.20f) {
 			ToTalkState(square);
 		}
 	}

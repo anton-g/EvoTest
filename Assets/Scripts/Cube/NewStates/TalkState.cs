@@ -18,7 +18,9 @@ public class TalkState : SquareState {
 		if (currentTalkTime < talkTime) {
 			currentTalkTime += Time.deltaTime;
 		} else {
-			ToMoveState();
+			if (Random.value < 0.20f) {
+				ToLoveState();
+			}
 		}
 	}
 	
@@ -40,6 +42,11 @@ public class TalkState : SquareState {
 
 		_square.interactionSquare = null;
 		_square.currentState = _square.moveState;
+	}
+
+	void ToLoveState() {
+		_square.currentState = _square.loveState;
+		_square.interactionSquare.currentState = _square.interactionSquare.loveState;
 	}
 
 	public Color color() {
