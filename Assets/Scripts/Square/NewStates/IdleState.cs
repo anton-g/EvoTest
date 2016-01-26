@@ -23,8 +23,4 @@ public class IdleState : SquareState {
 	public void Reset() {
 		
 	}
-
-	public Color color() {
-		return Color.white;
-	}
 }

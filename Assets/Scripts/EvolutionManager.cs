@@ -2,8 +2,12 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEngine.UI;
 
 public class EvolutionManager : MonoBehaviour {
+
+	/* UI */
+	public Text genText;
 
 	public GameObject square;
 
@@ -11,10 +15,13 @@ public class EvolutionManager : MonoBehaviour {
 	List<SquareDNA> population;
 	List<SquareDNA> matingPool;
 
-	int popSize = 100;
-	int matingPoolSize = 25;
+	int popSize = 50;
 
-	float mutationRate = 0.05f;
+	float mutationRate = 0.01f;
+
+	int generation = 1;
+
+	bool genReady = false;
 	
 	void Start () {
 		GetCameraSize();
@@ -25,24 +32,10 @@ public class EvolutionManager : MonoBehaviour {
 	}
 
 	void Update() {
-		if (Input.GetKeyDown(KeyCode.Space)) {
-			GameObject[] o = GameObject.FindGameObjectsWithTag("Square");
-
-			for (int i = 0; i < o.Length; i++) {
-				Destroy(o[i]);
-			}
-
-			//Step 2a calculate fitness
-
-			//Step 2b build matingpool
-			for (int i = 0; i < population.Count; i++) {
-				int n = (int)population[i].fitness * 100;
-				for (int j = 0; j < n; j++) {
-					matingPool.Add(population[i]);
-				}
-			}
-
-			Reproduce();
+		if (/*Input.GetKeyDown(KeyCode.Space) && */genReady) {
+			generation++;
+		
+			StartCoroutine("DestroyAll");
 		}
 	}
 
@@ -50,7 +43,7 @@ public class EvolutionManager : MonoBehaviour {
 	void Reproduce() {
 		List<SquareDNA> newPopulation = new List<SquareDNA>();
 
-		for (int i = 0; i < population.Count; i++) {
+		for (int i = 0; i < popSize; i++) {
 			int a = Random.Range(0, matingPool.Count());
 			int b = Random.Range(0, matingPool.Count());
 			SquareDNA partnerA = matingPool[a];
@@ -62,12 +55,41 @@ public class EvolutionManager : MonoBehaviour {
 
 			newPopulation.Add(child);
 		}
-
 		population = newPopulation;
 
 		StartCoroutine("SpawnGen");
 	}
 
+	IEnumerator DestroyAll() {
+		genReady = false;
+
+		//TODO optimize
+		GameObject[] o = GameObject.FindGameObjectsWithTag("Square");
+		
+		for (int i = 0; i < o.Length; i++) {
+			Destroy(o[i]);
+
+			yield return null;
+		}
+
+		genText.text = "Gen: " + generation;
+
+		matingPool.Clear();
+
+		//Step 2b build matingpool
+		for (int i = 0; i < popSize; i++) {
+			population[i].CalcFitness();
+			int n = (int)population[i].fitness;
+			for (int j = 0; j < n; j++) {
+				matingPool.Add(population[i]);
+			}
+		}
+
+		population.Clear();
+
+		Reproduce();
+	}
+	
 	void GetCameraSize() {
 		Camera camera = Camera.main;
 		var bottomLeft = camera.ScreenToWorldPoint(Vector3.zero);
@@ -87,6 +109,8 @@ public class EvolutionManager : MonoBehaviour {
 			SpawnSquare(population[i]);
 			yield return null;
 		}
+
+		genReady = true;
 	}
 
 	//Step 1 initialize pop
@@ -95,12 +119,18 @@ public class EvolutionManager : MonoBehaviour {
 			SpawnSquare(new SquareDNA());
 			yield return null;
 		}
+
+		genReady = true;
 	}
 
 	void SpawnSquare(SquareDNA dna) {
 		Vector3 randomPos = new Vector3(Random.Range(cameraRect.x, cameraRect.xMax), Random.Range (cameraRect.yMax, cameraRect.y), 0.0f);
 		GameObject individual = Instantiate(square, randomPos, Quaternion.identity) as GameObject;
 		SquareController sq = individual.GetComponent<SquareController>();
+		if (sq == null) {
+			Destroy(individual);
+			return;
+		}
 		sq.cameraRect = cameraRect;
 		population.Add(dna);
 		sq.SetDNA(dna);

@@ -56,8 +56,4 @@ public class MoveState : SquareState {
 	public void Reset() {
 
 	}
-
-	public Color color() {
-		return Color.white;
-	}
 }

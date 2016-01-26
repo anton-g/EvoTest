@@ -6,5 +6,4 @@ public interface SquareState {
 	void HandleCollision(Collider2D collision);
 	bool CanInteract();
 	void Reset();
-	Color color();
 }

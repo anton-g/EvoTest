@@ -44,8 +44,4 @@ public class LoveState : SquareState {
 	public void Reset() {
 		
 	}
-	
-	public Color color() {
-		return Color.magenta;
-	}
 }

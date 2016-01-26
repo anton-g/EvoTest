@@ -6,22 +6,26 @@ public enum SquareGene {
 	Speed,
 	Width,
 	Height,
-	Red = 10,
-	Blue = 15
+	Red,
+	Blue,
 }
 
 public class SquareDNA {
 	byte[] genes;
 	
-	int mostAdvancedTrait = 10;
+	int mostAdvancedTrait;
 
 	int minGeneValue = 0;
 	int maxGeneValue = 99;
 
+	int geneCount = 6;
+
 	public float fitness;
 
 	public SquareDNA() {
-		genes = new byte[64];
+		mostAdvancedTrait = 4;
+
+		genes = new byte[geneCount];
 
 		for (int i = 0; i < mostAdvancedTrait; i++) {
 			genes[i] = (byte)Random.Range(minGeneValue, maxGeneValue);
@@ -32,7 +36,9 @@ public class SquareDNA {
 
 	public SquareDNA Crossover(SquareDNA partner) {
 		SquareDNA child = new SquareDNA();
-		
+
+		child.mostAdvancedTrait = Mathf.Max(mostAdvancedTrait, partner.mostAdvancedTrait);
+
 		for (int i = 0; i < genes.Length; i++) {
 			int coinFlip = Random.Range(0, 2);
 			child.genes[i] = coinFlip == 0 ? genes[i] : partner.genes[i];
@@ -42,22 +48,26 @@ public class SquareDNA {
 	}
 
 	public void Mutate(float mutationRate) {
-		int maxMutation = (int)Mathf.Min(mostAdvancedTrait * 1.2f, 99);
-		for (int i = 0; i < maxMutation; i++) {
-			if (Random.Range(0.0f, 1.0f) < mutationRate) {
-				mostAdvancedTrait = i;
+		int maxMutation = (int)Mathf.Min(mostAdvancedTrait * 1.4f, geneCount - 1);
+		for (int i = 0; i <= maxMutation; i++) {
+			if (Random.value < mutationRate) {
 				genes[i] = (byte)Random.Range(minGeneValue, maxGeneValue);
+
+				if (i > mostAdvancedTrait) {
+					mostAdvancedTrait = i;
+				}
 			}
 		}
 	}
 
 	public void CalcFitness() {
 		int f = 0;
-		f += GetGene(SquareGene.Speed);
-		f += GetGene(SquareGene.Blue);
+		f += GetGene(SquareGene.Speed) / 2;
 		f += GetGene(SquareGene.Red);
+		f += GetGene(SquareGene.Green);
+		f += GetGene(SquareGene.Blue);
 
-		fitness = f;
+		fitness = Mathf.Min(f, 1);
 	}
 
 	public byte GetGene(SquareGene gene) {
