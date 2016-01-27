@@ -18,7 +18,6 @@ public class SquareController : MonoBehaviour {
 		set {
 			_currentState = value;
 			_currentState.Reset();
-			//mat.color = _currentState.color();
 		}
 	}
 
@@ -46,6 +45,10 @@ public class SquareController : MonoBehaviour {
 		float green = Mathf.Clamp(dna.GetGene(SquareGene.Green) / 100.0f, 0.2f, 1.0f);
 		float blue = Mathf.Clamp(dna.GetGene(SquareGene.Blue) / 100.0f, 0.2f, 1.0f);
 		mat.color = new Color(red, green, blue);
+
+		float width = dna.GetGene(SquareGene.Width) / 500.0f;
+		float height = dna.GetGene(SquareGene.Height) / 500.0f;
+		transform.localScale += new Vector3(width, height, 0.0f);
 	}
 
 	void Update() {

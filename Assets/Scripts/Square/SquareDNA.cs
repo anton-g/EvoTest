@@ -62,10 +62,11 @@ public class SquareDNA {
 
 	public void CalcFitness() {
 		int f = 0;
-		f += GetGene(SquareGene.Speed) / 2;
+		f += GetGene(SquareGene.Speed);
 		f += GetGene(SquareGene.Red);
 		f += GetGene(SquareGene.Green);
 		f += GetGene(SquareGene.Blue);
+		f += Mathf.Max(GetGene(SquareGene.Width), GetGene(SquareGene.Height)) - Mathf.Min(GetGene(SquareGene.Width), GetGene(SquareGene.Height));
 
 		fitness = Mathf.Min(f, 1);
 	}
